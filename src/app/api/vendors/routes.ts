@@ -2,43 +2,50 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Vendor from '@/lib/models/vendor';
 
-// POST /api/vendors → Create new vendor
-export async function POST(req: Request) {
+// GET /api/vendors/[id] - Get vendor by ID
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const body = await req.json();
-    const { name, bankAccountNo, bankName } = body;
-
-    if (!name || !bankAccountNo || !bankName) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
     await connectDB();
-    const newVendor = await Vendor.create(body);
-
-    return NextResponse.json(newVendor, { status: 201 });
+    const vendor = await Vendor.findById(params.id);
+    if (!vendor) {
+      return NextResponse.json({ error: 'Vendor not found' }, { status: 404 });
+    }
+    return NextResponse.json(vendor);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create vendor' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch vendor' }, { status: 500 });
   }
 }
 
-// GET /api/vendors → List all vendors (optionally paginated)
-export async function GET(req: Request) {
+// PUT /api/vendors/[id] - Update vendor
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '5');
-    const skip = (page - 1) * limit;
-
+    const body = await req.json();
     await connectDB();
-    const vendors = await Vendor.find().skip(skip).limit(limit);
-    const total = await Vendor.countDocuments();
-
-    return NextResponse.json({
-      vendors,
-      page,
-      totalPages: Math.ceil(total / limit),
+    const updatedVendor = await Vendor.findByIdAndUpdate(params.id, body, {
+      new: true,
     });
+    return NextResponse.json(updatedVendor);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to update vendor' }, { status: 500 });
+  }
+}
+
+// DELETE /api/vendors/[id] - Delete vendor
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectDB();
+    await Vendor.findByIdAndDelete(params.id);
+    return NextResponse.json({ message: 'Vendor deleted successfully' });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to delete vendor' }, { status: 500 });
   }
 }
