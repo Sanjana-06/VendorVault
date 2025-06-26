@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { useSession } from 'next-auth/react';
+
 
 type Vendor = {
   _id: string;
@@ -19,7 +21,14 @@ type Vendor = {
 export default function EditVendorPage({ params }: { params: { id: string } }) {
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
   const router = useRouter();
+    if (status === 'loading') return <p className="p-4">Checking session...</p>;
+    if (!session) {
+    router.push('/login');
+    return null;
+    }
+
 
   useEffect(() => {
     const fetchVendor = async () => {

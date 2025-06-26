@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import VendorForm from '@/components/vendorForm'; 
+import { useSession } from 'next-auth/react';
+
 
 type Vendor = {
   _id: string;
@@ -14,17 +16,41 @@ type Vendor = {
 };
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const router = useRouter();
+  useEffect(() => {
+  if (!session && status !== 'loading') {
+    router.push('/login');
+  }
+}, [session, status, router]);
+
+if (status === 'loading' || !session) {
+  return <p className="p-6">Loading...</p>;
+}
+
 
   const fetchVendors = async () => {
+  try {
     const res = await fetch(`/api/vendors?page=${page}&limit=5`);
+    if (!res.ok) throw new Error('Failed to fetch vendors');
     const data = await res.json();
-    setVendors(data.vendors);
-    setTotalPages(data.totalPages);
-  };
+
+    if (Array.isArray(data.vendors)) {
+      setVendors(data.vendors);
+      setTotalPages(data.totalPages || 1);
+    } else {
+      setVendors([]); 
+      setTotalPages(1);
+    }
+  } catch (error) {
+    console.error('Error fetching vendors:', error);
+    setVendors([]); 
+    toast.error('Unable to fetch vendors.');
+  }
+};
 
   const deleteVendor = async (id: string) => {
     const confirm = window.confirm('Are you sure you want to delete this vendor?');

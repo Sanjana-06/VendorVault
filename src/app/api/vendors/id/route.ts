@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import Vendor from '@/lib/models/vendor';
 
-// GET /api/vendors/[id] - Get vendor by ID
 export async function GET(
   req: Request,
   { params }: { params: { id: string } }
@@ -19,7 +18,6 @@ export async function GET(
   }
 }
 
-// PUT /api/vendors/[id] - Update vendor
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
@@ -36,7 +34,6 @@ export async function PUT(
   }
 }
 
-// DELETE /api/vendors/[id] - Delete vendor
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }

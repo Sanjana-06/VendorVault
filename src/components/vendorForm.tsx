@@ -49,7 +49,7 @@ export default function VendorForm({ onSuccess }: Props) {
         country: '',
         zipCode: '',
       });
-      onSuccess(); // refetch vendors
+      onSuccess(); 
     } else {
       toast.error('Failed to create vendor');
     }
