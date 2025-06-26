@@ -1,6 +1,6 @@
 # 🧾 VendorVault
 
-VendorVault is a full-stack vendor management dashboard.  
+VendorVault – A secure and streamlined platform to manage vendor records, bank details, and compliance workflows .
 
 ---
 
