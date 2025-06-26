@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import VendorForm from '@/components/vendorForm'; 
 
 type Vendor = {
   _id: string;
@@ -46,6 +47,10 @@ export default function DashboardPage() {
     <main className="p-6">
       <h1 className="text-2xl font-bold mb-4">Vendor Dashboard</h1>
 
+      {/* ✅ Add the VendorForm here */}
+      <VendorForm onSuccess={fetchVendors} />
+
+      {/* Vendor Table */}
       <table className="w-full border text-left">
         <thead className="bg-gray-100">
           <tr>
